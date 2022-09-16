@@ -1,9 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { Game } from './game.interface';
+import { TwitchGame } from './twitch.interface';
 
 @Injectable()
-export class AppService {
+export class TwitchService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly httpService: HttpService,
@@ -26,22 +28,30 @@ export class AppService {
     return data.access_token;
   }
 
-  async getTwitchTopGames() {
+  async getTwitchTopGames(): Promise<Game[]> {
     let appAccessToken = await this.cacheManager.get<string>('accessToken');
     if (!appAccessToken) {
       appAccessToken = await this.getAppAccessToken();
     }
 
-    const { data } = await this.httpService.axiosRef.get(
+    const { data } = await this.httpService.axiosRef.get<TwitchGame>(
       'https://api.twitch.tv/helix/games/top',
       {
         headers: {
-          'Client-Id': process.env.TWITCH_CLIENT_ID,
+          'Client-Id': process.env.TWITCH_CLIENT_ID as string,
           Authorization: `Bearer ${appAccessToken}`,
         },
       },
     );
 
-    return data;
+    const { data: remoteGame } = data;
+
+    return remoteGame.map((game) => ({
+      twitchGameId: game.id,
+      name: game.name,
+      bannerUrl: game.box_art_url
+        .replace('{width}', '180')
+        .replace('{height}', '240'),
+    }));
   }
 }
