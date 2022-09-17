@@ -12,9 +12,9 @@ Um projeto de players match desenvolvido durante Next Level Week da RocketSeat p
 
 ## Screenshots
 
-![Web Screenshot](/nlw-esports/screenshots/web.png?raw=true)
+![Web Screenshot](/screenshots/web.png?raw=true)
 
-![Mobile Screenshot](/nlw-esports/screenshots/mobile.png?raw=true)
+![Mobile Screenshot](/screenshots/mobile.png?raw=true)
 
 
 ## Variáveis de Ambiente BackEnd
