@@ -1,23 +1,46 @@
-const MOCK = [
-  { img: '/images/game001.png', name: 'League of Legends', amount: 4 },
-  { img: '/images/game004.png', name: 'Apex Legends', amount: 4 },
-  { img: '/images/game003.png', name: 'Counter Strike', amount: 4 },
-  { img: '/images/game006.png', name: 'World of Warcraft', amount: 4 },
-  { img: '/images/game002.png', name: 'Dota 2', amount: 4 },
-  { img: '/images/game005.png', name: 'Fortnite', amount: 4 },
-]
+import { useState } from 'react'
+import 'keen-slider/keen-slider.min.css'
+import { useKeenSlider } from 'keen-slider/react'
 
-function GamesCarousel() {
+import GamesBanner from "./games-banner";
+
+export type Game = {
+  "id": string
+  "twitchGameId": string
+  "name": string
+  "bannerUrl": string,
+  "_count": {
+    "ads": number
+  }
+}
+
+type Props = {
+  data: Game[]
+}
+
+function GamesCarousel({ data }: Props) {
+  const [sliderRef] = useKeenSlider({
+      initial: 0,
+      loop: true,
+      mode: "free",
+      slides: {
+        perView: 6,
+        spacing: 16,
+      },
+    },
+    [])
+
   return (
-    <div className="grid grid-cols-6 gap-6 mt-16">
-      {MOCK.map((mock, i) => (
-        <a key={`item-${i}`} href="" className="relative rounded-lg overflow-hidden">
-          <img src={mock.img} alt={mock.name} />
-          <div className="w-full pt-16 pb-4 px-2 bg-gradient-shadow absolute bottom-0 left-0 right-0">
-            <strong className="font-bold text-white block">{mock.name}</strong>
-            <strong className="text-zinc-300 text-sm block">{mock.amount} anúncios</strong>
-          </div>
-        </a>
+    <div ref={sliderRef} className="keen-slider mt-16">
+      {data.map((game, index) => (
+        <div key={game.id} className={`keen-slider__slide number-slide${index+1}`}>
+          <GamesBanner
+            name={game.name}
+            bannerUrl={game.bannerUrl}
+            adsCount={game._count.ads}
+            id={game.id}
+          />
+        </div>
       ))}
     </div>
   )
